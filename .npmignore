@@ -1,0 +1,13 @@
+# Exclude source and development artifacts from npm publish
+src/
+*.test.ts
+*.spec.ts
+tsconfig*.json
+tsup.config.*
+vitest.config.*
+.eslintrc*
+.prettierrc*
+
+# Monorepo / dev tooling
+prompts/
+node_modules/

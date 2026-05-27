@@ -1,4 +1,23 @@
-import { AuthzContext, AuthorizationEngine, PolicyDefinition, Decision, Condition, CanOptions } from './types';
+import { AuthzContext, AuthorizationEngine, PolicyDefinition, Decision, Condition, JsonCondition, CanOptions } from './types';
+
+// ---------------------------------------------------------------------------
+// Shared JSON condition evaluator (used by both PolicyBuilder and PBACEngine)
+// ---------------------------------------------------------------------------
+function getValueByPath(obj: any, path: string): any {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+}
+
+export function evaluateJsonCondition(condition: JsonCondition, ctx: AuthzContext): boolean {
+  const { op, path, value } = condition;
+  const actualValue = getValueByPath(ctx, path);
+  switch (op) {
+    case 'equals':    return actualValue === value;
+    case 'notEquals': return actualValue !== value;
+    case 'in':        return Array.isArray(value) && value.includes(actualValue);
+    case 'contains':  return Array.isArray(actualValue) && actualValue.includes(value);
+    default:          return false;
+  }
+}
 
 export class PolicyBuilder<Action extends string = string, Resource extends string = string> {
   private policy: PolicyDefinition;
@@ -23,13 +42,10 @@ export class PolicyBuilder<Action extends string = string, Resource extends stri
   whenAny(conditions: Condition[]): this {
     this.policy.condition = async (ctx) => {
       for (const cond of conditions) {
-        if (typeof cond === 'function') {
-          if (await cond(ctx)) return true;
-        } else {
-          // JSON conditions in builder are rare but possible if nesting
-          // For now, assume builder conditions are mostly functions or handle them simply.
-          // Better yet, I'll keep the builder conditions as functions that can wrap others.
-        }
+        const result = typeof cond === 'function'
+          ? await cond(ctx)
+          : await evaluateJsonCondition(cond, ctx);
+        if (result) return true;
       }
       return false;
     };
@@ -39,9 +55,10 @@ export class PolicyBuilder<Action extends string = string, Resource extends stri
   whenAll(conditions: Condition[]): this {
     this.policy.condition = async (ctx) => {
       for (const cond of conditions) {
-        if (typeof cond === 'function') {
-          if (!(await cond(ctx))) return false;
-        }
+        const result = typeof cond === 'function'
+          ? await cond(ctx)
+          : await evaluateJsonCondition(cond, ctx);
+        if (!result) return false;
       }
       return true;
     };
@@ -90,22 +107,7 @@ export class PBACEngine implements AuthorizationEngine {
     if (typeof condition === 'function') {
       return condition(ctx);
     }
-    
-    // JSON condition evaluation
-    const { op, path, value } = condition;
-    const actualValue = this.getValueByPath(ctx, path);
-
-    switch (op) {
-      case 'equals': return actualValue === value;
-      case 'notEquals': return actualValue !== value;
-      case 'in': return Array.isArray(value) && value.includes(actualValue);
-      case 'contains': return Array.isArray(actualValue) && actualValue.includes(value);
-      default: return false;
-    }
-  }
-
-  private getValueByPath(obj: any, path: string): any {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    return evaluateJsonCondition(condition, ctx);
   }
 
   async can(ctx: AuthzContext, options?: CanOptions): Promise<boolean | Decision> {
