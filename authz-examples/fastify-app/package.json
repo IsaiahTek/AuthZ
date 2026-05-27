@@ -1,0 +1,17 @@
+{
+  "name": "example-fastify-authz",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@vynelix/authz-core": "workspace:*",
+    "@vynelix/authz-fastify": "workspace:*",
+    "fastify": "^4.25.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "example-nestjs-authz",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "start:dev": "nest start --watch"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "@vynelix/authz-core": "workspace:*",
+    "@vynelix/authz-nestjs": "workspace:*"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}

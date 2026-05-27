@@ -1,0 +1,18 @@
+{
+  "name": "example-express-authz",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@vynelix/authz-core": "workspace:*",
+    "@vynelix/authz-express": "workspace:*",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}

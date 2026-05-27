@@ -1,0 +1,33 @@
+{
+  "name": "@vynelix/authz-nestjs",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --watch --dts"
+  },
+  "dependencies": {
+    "@vynelix/authz-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "rxjs": "^7.8.1",
+    "reflect-metadata": "^0.1.13",
+    "@swc/core": "^1.7.26",
+    "unplugin-swc": "^1.4.5",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.0.0"
+  }
+}
