@@ -1,3 +1,5 @@
+export { createAuthz, policy } from '@vynelix/authz-core';
+
 import {
   Injectable,
   CanActivate,
@@ -30,12 +32,12 @@ export class AuthzGuard implements CanActivate {
   constructor(
     @Inject(Reflector) private reflector: Reflector,
     @Inject('AUTHZ_ENGINE') private engine: AuthorizationEngine,
-    @Inject('AUTHZ_OPTIONS') private options: { 
-      useCache?: boolean; 
-      extractor?: (req: any) => any; 
-      defaultDebug?: boolean; 
+    @Inject('AUTHZ_OPTIONS') private options: {
+      useCache?: boolean;
+      extractor?: (req: any) => any;
+      defaultDebug?: boolean;
     }
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const metadata = this.reflector.getAllAndOverride<AuthorizeMetadata>(AUTHORIZE_KEY, [
@@ -48,10 +50,10 @@ export class AuthzGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = metadata.extractor 
-      ? metadata.extractor(request) 
-      : this.options.extractor 
-        ? this.options.extractor(request) 
+    const user = metadata.extractor
+      ? metadata.extractor(request)
+      : this.options.extractor
+        ? this.options.extractor(request)
         : request.user;
 
     if (!user) {
@@ -135,7 +137,7 @@ export class AuthzModule {
         },
         {
           provide: 'AUTHZ_OPTIONS',
-          useValue: { 
+          useValue: {
             useCache: options.useCache ?? true,
             extractor: options.extractor,
             defaultDebug: options.defaultDebug
